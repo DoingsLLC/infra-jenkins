@@ -203,7 +203,7 @@ resource "aws_eks_cluster" "doings_cluster" {
 
 # Export the kubeconfig for the EKS cluster
 # output "kubeconfig" {
-#  value = aws_eks_cluster.karo_cluster.kubeconfig
+#  value = aws_eks_cluster.doings_cluster.kubeconfig
 #}
 
 
