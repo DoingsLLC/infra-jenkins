@@ -149,6 +149,13 @@ resource "aws_route_table_association" "private_subnet_route_table_association_2
   route_table_id = aws_route_table.private_subnet_route_table.id
 }
 
+# Create a null_resource to introduce a wait time
+resource "null_resource" "wait" {
+  provisioner "local-exec" {
+    command = "./wait.sh"
+  }
+}
+
 # Create an IAM role for the EKS cluster
 resource "aws_iam_role" "eks_cluster_role" {
   name = "eks_cluster_role"
@@ -164,12 +171,16 @@ resource "aws_iam_role" "eks_cluster_role" {
       }
     ]
   })
+
+  depends_on = [null_resource.wait]  # Ensure this role is created after the wait
 }
 
 # Attach the necessary policies to the IAM role
 resource "aws_iam_role_policy_attachment" "eks_cluster_role_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster_role.name
+
+  depends_on = [aws_iam_role.eks_cluster_role]
 }
 
 # Create an EKS cluster
